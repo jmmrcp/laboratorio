@@ -1,0 +1,91 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+_extensions/
+imagen/
+
+# Cache y herramientas
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.jupyter_cache/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Quarto
+# =========================
+.quarto/
+_freeze/
+
+# Renderizados generados
+*.html
+*.pdf
+*.docx
+*_files/
+
+# =========================
+# R / RStudio
+# =========================
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# Sistema operativo
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Bases de datos locales
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Archivos temporales
+# =========================
+*.tmp
+*.temp
+*~
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Archivos específicos del proyecto
+# =========================
+.python-version
+
+# Si los PDF y HTML son resultados de renderización,
+# mantener excluidos:
+IBM*
+
+
+# Si spacex.db es una BD generada:
+spacex.db
