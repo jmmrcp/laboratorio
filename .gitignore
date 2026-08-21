@@ -11,6 +11,7 @@ venv/
 env/
 ENV/
 _extensions/
+_extensions-back/
 imagen/
 
 # Cache y herramientas
@@ -37,6 +38,7 @@ _freeze/
 *.pdf
 *.docx
 *_files/
+*.txt
 
 # =========================
 # R / RStudio
@@ -89,3 +91,5 @@ IBM*
 
 # Si spacex.db es una BD generada:
 spacex.db
+/.quarto/
+**/*.quarto_ipynb
