@@ -350,7 +350,7 @@ Para comprobarlo se analizó la relación entre:
 - Número de vuelo (Flight Number).
 - Resultado del aterrizaje (Class).
 
-{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task1 >}}
+{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task-1 >}}
 
 
 ### Interpretación
@@ -386,11 +386,8 @@ Por este motivo se analizó la relación entre:
 
 - PayloadMass.
 - Resultados de aterrizaje.
-[ZONA PARA GRÁFICO]
 
-Figura X. Masa de carga útil frente a resultado del aterrizaje.
-
-{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task2 >}}
+{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task0 >}}
 
 ### Interpretación
 
@@ -417,11 +414,7 @@ Cada instalación presenta características específicas relacionadas con:
 
 El objetivo de este análisis es determinar si existen diferencias de rendimiento entre complejos.
 
-[ZONA PARA GRÁFICO]
-
-Figura X. Éxito de aterrizaje por centro de lanzamiento.
-
-{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task3 >}}
+{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task1 >}}
 
 ### Instalaciones analizadas
 
@@ -465,11 +458,7 @@ Algunas órbitas requieren:
 
 Estas condiciones afectan directamente la capacidad de recuperación de la primera etapa.
 
-[ZONA PARA GRÁFICO]
-
-Figura X. Tasa de éxito por tipo de órbita.
-
-{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task4 >}}
+{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task3 >}}
 
 ### Órbitas principales
 
@@ -503,11 +492,7 @@ El tipo de órbita constituye uno de los predictores operativos más importantes
 
 Además de analizar variables individuales, resulta importante comprender cómo ha evolucionado el programa de recuperación a lo largo del tiempo.
 
-[ZONA PARA GRÁFICO]
-
-Figura X. Evolución anual de la tasa de éxito.
-
-{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task5 >}}
+{{< embed src/laboratorio/jupyter-labs-eda-dataviz-v2.ipynb#task6 >}}
 
 ### Interpretación
 
@@ -557,7 +542,7 @@ cur = con.cursor()
 ## ¿Qué sitios de lanzamiento utiliza SpaceX?
 
 La primera consulta tuvo como objetivo identificar todas las instalaciones utilizadas por *SpaceX* durante el periodo analizado.
-```{.python filename="Consulta 1"}
+```{.sql filename="Consulta 1"}
 SELECT DISTINCT Launch_Site
 FROM SPACEXTABLE;
 ```
@@ -586,16 +571,16 @@ La NASA constituye uno de los principales clientes institucionales de *SpaceX*.
 
 Para cuantificar esta relación se calculó la masa total transportada para dicha organización.
 
-```{.python filename="Consulta 2"}
+```{.sql filename="Consulta 2"}
 SELECT SUM(PAYLOAD_MASS__KG_)
 FROM SPACEXTABLE
 WHERE CUSTOMER = 'NASA (CRS)';
 ```
 
 ```{python}
-q3 = pd.read_sql_query("SELECT SUM(PAYLOAD_MASS__KG_) as 'Peso Total NASA (kg)' FROM SPACEXTABLE WHERE Customer LIKE '%NASA%';", con)
+q2 = pd.read_sql_query("SELECT SUM(PAYLOAD_MASS__KG_) as 'Peso Total NASA (kg)' FROM SPACEXTABLE WHERE Customer LIKE '%NASA%';", con)
 display(Markdown("**Peso total transportado para la NASA:**"))
-display(Markdown(q3.to_markdown(index=False)))
+display(Markdown(q2.to_markdown(index=False)))
 ```
 
 ### Interpretación
@@ -608,18 +593,17 @@ Además de generar ingresos recurrentes, estas misiones han servido como platafo
 
 Una de las preguntas más relevantes desde el punto de vista técnico consiste en determinar la capacidad operativa de las distintas versiones del Falcon 9.
 
-[ZONA PARA CÓDIGO]
-SELECT
-AVG(PAYLOAD_MASS__KG_)
-AS Promedio_Carga
+``` {.sql filename="Consulta 3"}
+SELECT AVG(PAYLOAD_MASS__KG_)
 FROM SPACEXTABLE
-WHERE Booster_Version LIKE '%F9 v1.1%';
+WHERE BOOSTER_VERSION = 'F9 v1.1';
+```
 
-[ZONA PARA TABLA]
-
-Tabla X. Capacidad media de carga del Falcon 9 v1.1
-
-Indicador	ValorPromedio de carga (kg)	XXX
+```{python}
+q3 = pd.read_sql_query("SELECT AVG(PAYLOAD_MASS__KG_) as 'Capacidad de carga' FROM SPACEXTABLE WHERE BOOSTER_VERSION = 'F9 v1.1';", con)
+display(Markdown("**Capacidad media de carga del Falcon 9 v1.1:**"))
+display(Markdown(q3.to_markdown(index=False)))
+```
 
 ### Interpretación
 
@@ -631,19 +615,17 @@ La recuperación sobre plataforma terrestre representa uno de los hitos más rel
 
 Para identificar este acontecimiento histórico se ejecutó la siguiente consulta.
 
-[ZONA PARA CÓDIGO]
-SELECT
-MIN(Date)
-AS Primer_Aterrizaje_Exitoso
+``` {.sql filename="Consulta 4"}
+SELECT MIN(Date)
 FROM SPACEXTABLE
-WHERE Landing_Outcome =
-'Success (ground pad)';
+WHERE Landing_Outcome = 'Success (ground pad)';
+```
 
-[ZONA PARA TABLA]
-
-Tabla X. Primer aterrizaje exitoso en tierra
-
-Evento	FechaPrimer aterrizaje terrestre	XXX
+```{python}
+q4 = pd.read_sql_query("SELECT MIN(Date) as 'Primer aterrizaje' FROM SPACEXTABLE WHERE Landing_Outcome = 'Success (ground pad)'", con)
+display(Markdown("**Primer aterrizaje exitoso en tierra:**"))
+display(Markdown(q4.to_markdown(index=False)))
+```
 
 ### Interpretación
 
@@ -657,22 +639,19 @@ Una de las innovaciones más relevantes introducidas por *SpaceX* fue la recuper
 
 Estas operaciones son especialmente importantes para misiones que no disponen de suficiente combustible residual para regresar al punto de lanzamiento.
 
-[ZONA PARA CÓDIGO]
-SELECT
-Booster_Version,
-PAYLOAD_MASS__KG_
+``` {.sql filename="Consulta 5"}
+SELECT BOOSTER_VERSION
 FROM SPACEXTABLE
-WHERE Landing_Outcome =
-'Success (drone ship)'
-AND PAYLOAD_MASS__KG_
-BETWEEN 4000 AND 6000;
+WHERE LANDING_OUTCOME = 'Success (drone ship)'
+  AND PAYLOAD_MASS__KG_ > 4000
+  AND PAYLOAD_MASS__KG_ < 6000;
+```
 
-[ZONA PARA TABLA]
-
-Tabla X. Recuperaciones exitosas en droneship
-
-Booster	PayloadXXX	XXX
-Interpretación
+```{python}
+q5 = pd.read_sql_query("SELECT BOOSTER_VERSION as 'Recuperaciones Drone Ship' FROM SPACEXTABLE WHERE LANDING_OUTCOME = 'Success (drone ship)' AND PAYLOAD_MASS__KG_ > 4000   AND PAYLOAD_MASS__KG_ < 6000;", con)
+display(Markdown("**Recuperaciones exitosas en droneship:**"))
+display(Markdown(q5.to_markdown(index=False)))
+```
 
 La existencia de recuperaciones exitosas con cargas relativamente elevadas demuestra la madurez de los sistemas de navegación, guiado y control desarrollados por *SpaceX*.
 
@@ -681,25 +660,37 @@ La existencia de recuperaciones exitosas con cargas relativamente elevadas demue
 Para comprender el rendimiento global del programa se calcularon todos los resultados registrados históricamente.
 
 [ZONA PARA CÓDIGO]
-SELECT
-Landing_Outcome,
-COUNT(*)
+``` {.sql filename="Consulta 6"}
+SELECT LANDING_OUTCOME,COUNT(*)
 FROM SPACEXTABLE
-GROUP BY Landing_Outcome
+GROUP BY LANDING_OUTCOME
 ORDER BY COUNT(*) DESC;
+```
 
-[ZONA PARA TABLA]
+```{python}
+q6 = pd.read_sql_query("SELECT LANDING_OUTCOME AS 'Tipo', COUNT(*) AS 'Cantidad' FROM SPACEXTABLE GROUP BY LANDING_OUTCOME ORDER BY COUNT(*) DESC;", con)
+display(Markdown("**Distribución histórica de resultados:**"))
+display(Markdown(q6.to_markdown(index=False)))
+```
 
-Tabla X. Distribución histórica de resultados
+```{python}
+import matplotlib.pyplot as plt
 
-Resultado	TotalSuccess	XXX
-Failure	XXX
-...	...
-[ZONA PARA GRÁFICO]
+plt.figure(figsize=(10,6))
+plt.bar(q6["Tipo"], q6["Cantidad"], color="steelblue")
 
-Figura X. Distribución de aterrizajes Falcon 9
+plt.title("Distribución histórica de resultados de aterrizaje")
+plt.xlabel("Resultado")
+plt.ylabel("Cantidad")
+plt.xticks(rotation=45, ha="right")
 
-GRAFICO DE BARRAS RESULTADOS SQL
+# Mostrar el valor encima de cada barra
+for i, v in enumerate(q6["Cantidad"]):
+    plt.text(i, v, str(v), ha="center", va="bottom")
+
+plt.tight_layout()
+plt.show()
+```
 
 ### Interpretación
 
@@ -711,23 +702,20 @@ Este hallazgo coincide con las tendencias identificadas previamente durante el a
 
 Para evaluar los límites operativos del Falcon 9 se identificaron las misiones que transportaron la mayor masa útil registrada.
 
-[ZONA PARA CÓDIGO]
-SELECT
-Booster_Version,
-PAYLOAD_MASS__KG_
+``` {.sql filename="Consulta 7"}
+SELECT BOOSTER_VERSION
 FROM SPACEXTABLE
-WHERE PAYLOAD_MASS__KG_ =
-(
-SELECT MAX(PAYLOAD_MASS__KG_)
-FROM SPACEXTABLE
+WHERE PAYLOAD_MASS__KG_ = (
+    SELECT MAX(PAYLOAD_MASS__KG_)
+    FROM SPACEXTABLE
 );
+```
 
-[ZONA PARA TABLA]
-
-Tabla X. Misiones con carga máxima
-
-Booster	Carga MáximaXXX	XXX
-Interpretación
+```{python}
+q7 = pd.read_sql_query("SELECT BOOSTER_VERSION as 'Mision' FROM SPACEXTABLE WHERE PAYLOAD_MASS__KG_ = (SELECT MAX(PAYLOAD_MASS__KG_) FROM SPACEXTABLE);", con)
+display(Markdown("**Misiones con carga máxima:**"))
+display(Markdown(q7.to_markdown(index=False)))
+```
 
 Las cargas más pesadas suelen representar los escenarios de recuperación más exigentes, ya que requieren un consumo adicional de combustible durante la fase de ascenso.
 
@@ -735,21 +723,22 @@ Las cargas más pesadas suelen representar los escenarios de recuperación más 
 
 El año 2015 constituye un periodo particularmente interesante debido a la transición entre las primeras pruebas de recuperación y los éxitos posteriores.
 
-[ZONA PARA CÓDIGO]
+``` {.sql filename="Consulta 8"}
 SELECT
-substr(Date,6,2),
-Booster_Version,
-Launch_Site
+    SUBSTR(Date, 6, 2) AS Month,
+    Landing_Outcome,
+    Booster_Version,
+    Launch_Site
 FROM SPACEXTABLE
-WHERE Landing_Outcome =
-'Failure (drone ship)'
-AND substr(Date,1,4)='2015';
+WHERE SUBSTR(Date, 1, 4) = '2015'
+  AND Landing_Outcome = 'Failure (drone ship)';
+```
 
-[ZONA PARA TABLA]
-
-Tabla X. Fallos en droneship durante 2015
-
-Mes	Booster	SitioXXX	XXX	XXX
+```{python}
+q8 = pd.read_sql_query("SELECT SUBSTR(Date, 6, 2) AS Month, Landing_Outcome, Booster_Version, Launch_Site FROM SPACEXTABLE WHERE SUBSTR(Date, 1, 4) = '2015' AND Landing_Outcome = 'Failure (drone ship)';", con)
+display(Markdown("**Fallos en droneship durante 2015:**"))
+display(Markdown(q8.to_markdown(index=False)))
+```
 
 ### Interpretación
 
@@ -761,11 +750,30 @@ Los fallos observados no representan debilidades del sistema, sino etapas natura
 
 Finalmente, se generó una clasificación completa de resultados para el periodo inicial del programa.
 
-[ZONA PARA GRÁFICO]
+```{python}
+q9 = pd.read_sql_query("""
+SELECT LANDING_OUTCOME as 'Resultado',
+       COUNT(*) as 'Cantidad'
+FROM SPACEXTABLE
+WHERE Date BETWEEN '2010-06-04' AND '2017-03-20'
+GROUP BY LANDING_OUTCOME
+ORDER BY Cantidad DESC;
+""", con)
+```
 
-Figura X. Ranking histórico de resultados de aterrizaje
 
-INSERTAR GRAFICO SQL RESULTADOS HISTORICOS
+```{python}
+plt.figure(figsize=(12,6))
+plt.bar(q9["Resultado"], q9["Cantidad"])
+
+plt.title("Landing Outcomes Ranking")
+plt.xlabel("Landing Outcome")
+plt.ylabel("Count")
+plt.xticks(rotation=45, ha="right")
+
+plt.tight_layout()
+plt.show()
+```
 
 ## Conclusiones del análisis SQL
 
@@ -839,19 +847,12 @@ Estas instalaciones fueron representadas mediante coordenadas GPS.
 
 {{< embed src/laboratorio/lab-jupyter-launch-site-location-v2.ipynb#folium-1 >}}
 
-Código 15. Creación del mapa base
 
-site_map = folium.Map(
-    location=[29.559684888503615,
-              -95.0830971930759],
-    zoom_start=5
-)
+{{< embed src/laboratorio/lab-jupyter-launch-site-location-v2.ipynb#folium-2 echo=true output=false >}}
 
-[ZONA PARA IMAGEN]
 
-Figura 15. Localización de las bases *SpaceX* en Estados Unidos
+![Bases de SpaceX en EEUU](img/img-14.png){width="600"}
 
-INSERTAR CAPTURA DEL MAPA FOLIUM
 
 ### Interpretación
 
@@ -870,21 +871,12 @@ El objetivo fue estudiar la relación entre:
 - Riesgo operacional.
 - Seguridad pública.
 - Distancia respecto a poblaciones.
+
 [ZONA PARA IMAGEN]
-
 Figura 16. Distancias entre complejos espaciales y núcleos urbanos
-
 INSERTAR CAPTURA MAPA DE PROXIMIDAD
 
-[ZONA PARA CÓDIGO]
-
-Código 16. Marcadores geográficos adicionales
-
-folium.Marker(
-    [latitude, longitude],
-    popup=distance,
-    icon=folium.Icon(color='blue')
-).add_to(site_map)
+{{< embed src/laboratorio/lab-jupyter-launch-site-location-v2.ipynb#folium-4 echo=true output=false >}}
 
 ### Hallazgos
 
@@ -917,11 +909,8 @@ Por este motivo se analizaron elementos como:
 - Ferrocarriles.
 - Puertos.
 - Aeropuertos.
-[ZONA PARA IMAGEN]
 
-Figura 17. Infraestructuras de transporte cercanas
-
-INSERTAR CAPTURA CARRETERAS Y FERROCARRILES
+![Infraestructuras de transporte cercanas](img/img-15.png){width="600"}
 
 ### Interpretación
 
@@ -964,15 +953,7 @@ d = 2R \arcsin \left(
 \right)
 $$ {#eq-haversine}
 
-La distancia entre dos coordenadas geográficas se calcula mediante la Ecuación de Haversine (@eq-haversine).
-
-[ZONA PARA CÓDIGO]
-
-Código 17. Implementación de Haversine
-
-def calculate_distance(lat1, lon1,
-                       lat2, lon2):
-    ...
+{{< embed src/laboratorio/lab-jupyter-launch-site-location-v2.ipynb#folium-5 echo=true output=false >}}
 
 ### Aplicaciones dentro del proyecto
 
@@ -1031,14 +1012,15 @@ El dashboard permite:
 - Visualizar proporciones de éxito.
 - Comparar resultados entre instalaciones.
 - Analizar tendencias dinámicamente.
+- Visualizar los centros de lanzamiento.
+- Misiones realizadas.
 
 ![Arquitectura del Dashboard](img/img-8.png){width="600"}
 
-[ZONA PARA IMAGEN]
+![Vista general del Dashboard](img/img-16.png){width="600"}
 
-Figura 19. Vista general del Dashboard
-
-INSERTAR CAPTURA DEL DASHBOARD
+https://jmmrcp.pythonanywhere.com/
+https://dashboard-0l7k.onrender.com/
 
 ## Análisis de resultados del Dashboard
 
