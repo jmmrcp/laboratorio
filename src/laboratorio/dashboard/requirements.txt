@@ -1,0 +1,18 @@
+# Manipulación y Análisis de Datos
+pandas
+numpy
+
+# Machine Learning
+scikit-learn
+
+# Visualización de Datos (EDA)
+matplotlib
+seaborn
+
+# Dashboard Interactivo
+dash
+dash-bootstrap-components
+plotly
+
+# Entorno de trabajo (opcional para despliegues, pero útil en local)
+jupyter
