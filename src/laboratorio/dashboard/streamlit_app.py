@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 
 # 1. Carga y Preparación de Datos
-URL = "spacex_launch_dash.csv"
+URL = "/workspaces/laboratorio/src/laboratorio/dashboard/spacex_launch_dash.csv"
 spacex_df = pd.read_csv(URL)
 max_payload = spacex_df["Payload Mass (kg)"].max()
 min_payload = spacex_df["Payload Mass (kg)"].min()
